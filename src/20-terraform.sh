@@ -54,7 +54,10 @@ main() {
         "plan")
             hide_old_plans
             ;;
-        "apply|destroy")
+        "apply")
+            # skip
+            ;;
+        "destroy")
             # skip
             ;;
         *)
@@ -123,7 +126,7 @@ main() {
     echo "[INFO] Running terraform ${command} in $(pwd) with ${tf_args[*]} arguments"
 
     # shellcheck disable=SC2068
-    if [[ -n "${GITHUB_TOKEN}" ]]; then
+    if [[ -n "${GITHUB_TOKEN}" ]] && [[ "${command}" != "destroy" ]]; then
         # NOTE(Adi): 
         # Pass the envs with INPUT_ instead of directly configuring GITHUB_xxx
         # not to conflict with other usages (e.g. GitHub Terraform Provider)
