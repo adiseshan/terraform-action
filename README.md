@@ -8,12 +8,12 @@ This action is a wrapper for terraform. Enables gitops based management for terr
 - A runner with various tools pre-installed is required. 
   - jq, yq, gh, zip, unzip, tar, terraform, tfcmt
   - Other tools based on the terraform provisioner usages. 
-  - Recommended to use runner-image [adiseshan/terraform-cicd:v1](https://hub.docker.com/repository/docker/adiseshan/terraform-cicd/general)
+  - Recommended to use runner-image [adiseshan/terraform-cicd:v1.0.0](https://hub.docker.com/repository/docker/adiseshan/terraform-cicd/general)
 
 ## What's inside
 
 - Works with any version in the underlining runner image.
-  - Sample image [adiseshan/terraform-cicd:v1](https://hub.docker.com/repository/docker/adiseshan/terraform-cicd/general)
+  - Sample image [adiseshan/terraform-cicd:v1.0.0](https://hub.docker.com/repository/docker/adiseshan/terraform-cicd/general)
 - `actions/checkout` should be done so that the source is available for the terraform command.
 - Works with 2 modes.
   - plan
@@ -119,7 +119,7 @@ jobs:
   pr-workflow:
     runs-on: ubuntu-latest
     container: 
-      image: adiseshan/terraform-cicd:v1
+      image: adiseshan/terraform-cicd:v1.0.0
       credentials:
         username: ${{ env.DOCKER_USER }}
         password: ${{ env.DOCKER_TOKEN }}
@@ -183,7 +183,7 @@ jobs:
   general-test1:
     runs-on: ubuntu-latest
     container: 
-      image: adiseshan/terraform-cicd:v1
+      image: adiseshan/terraform-cicd:v1.0.0
       credentials:
         username: ${{ env.DOCKER_USER }}
         password: ${{ env.DOCKER_TOKEN }}
