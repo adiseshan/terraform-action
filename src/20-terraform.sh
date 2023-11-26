@@ -54,7 +54,7 @@ main() {
         "plan")
             hide_old_plans
             ;;
-        "apply")
+        "apply|destroy")
             # skip
             ;;
         *)
@@ -95,6 +95,11 @@ main() {
     # yq -i ".ghe_base_url = \"${INPUT_GITHUB_BASE_URL}\"" "${CONFIG_PATH}"
 
     if [[ "${command}" == "apply" ]]; then
+        tf_args+=(
+            -auto-approve
+        )
+    fi
+    if [[ "${command}" == "destroy" ]]; then
         tf_args+=(
             -auto-approve
         )
