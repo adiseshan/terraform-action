@@ -1,0 +1,40 @@
+name: lint
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  yaml:
+    runs-on: ubuntu-latest
+    container:
+      image: adiseshan/actions-ci-runner:v1.0.0
+      credentials:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: yaml lint
+        shell: bash
+        run: |
+          git config --global --add safe.directory "*"
+          set +e
+          echo starting to yaml lint
+          find . -name \*.yml | xargs yamllint -f parsable > yamllint.txt
+          cat yamllint.txt
+          cat yamllint.txt | reviewdog -name=yamllint -f=pep8 -reporter=github-pr-review
+          if [[ $(wc -l < yamllint.txt) -gt "0"  ]]; then
+            exit 1
+          fi
+          exit 0
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          GITHUB_API: https://api.github.com/api/v3/
+          CI_PULL_REQUEST: ${{ github.event.number }}
+          CI_REPO_OWNER: ${{ github.repository_owner }}
+          CI_REPO_NAME: ${{ github.event.repository.name }}
+          CI_COMMIT: ${{ github.sha }}"
