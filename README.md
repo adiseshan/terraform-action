@@ -132,7 +132,7 @@ jobs:
 
       # # aws login starts
       - name: Configure AWS Credentials
-        uses: synced-actions/aws-actions-configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: xxxxxx
           role-session-name: githubsession
@@ -194,7 +194,7 @@ jobs:
 
       # # aws login starts
       - name: Configure AWS Credentials
-        uses: synced-actions/aws-actions-configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: xxxxxx
           role-session-name: githubsession
