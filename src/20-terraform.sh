@@ -54,7 +54,10 @@ main() {
         "plan")
             hide_old_plans
             ;;
-        "apply|destroy")
+        "apply")
+            # skip
+            ;;
+        "destroy")
             # skip
             ;;
         *)
