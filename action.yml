@@ -1,0 +1,90 @@
+name: "run-terraform"
+description: "run terraform plan and apply"
+author: "Adiseshan K"
+inputs:
+  INPUT_RUN_INIT:
+    description: "whether to run terraform init. defaults to true."
+    default: "true"
+  INPUT_INIT_ADDITIONAL_ARGUMENTS:
+    description: "init additional arguments"
+  INPUT_COMMAND:
+    description: "A version to install tfcmt"
+    default: "plan"
+  INPUT_ADDITIONAL_ARGUMENTS:
+    description: "terraform additional arguments"
+  INPUT_GLOBAL_ARGUMENTS:
+    description: "terraform global options"
+    default: ""
+    required: false
+  INPUT_PATH:
+    description: "working directory"
+    default: "."
+    required: false
+  INPUT_LOG_LEVEL:
+    description: "tfcmt log level"
+    default: "info"
+    required: false
+  INPUT_SECRETS_JSON:
+    description: "secrets as json"
+  INPUT_SECRETS_FILTER_PREFIX:
+    description: "optional. prefix to export"
+    default: TF_VARS
+    required: false
+  INPUT_TARGET:
+    description: "optional. suffix to add to title"
+    required: false
+  INPUT_GITHUB_HOSTNAME:
+    description: "github hostname"
+    default: github.com
+  GITHUB_TOKEN:
+    description: "github token"
+  INPUT_GITHUB_REPOSITORY_OWNER:
+    description: "github org owner"
+  INPUT_GITHUB_REPOSITORY_NAME:
+    description: "repository name"
+  INPUT_PR_NUMBER:
+    description: "pr to post the results"
+    required: false
+  INPUT_GITHUB_SHA:
+    description: "git sha"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: export TF_VARS env variables
+      id: export-tf-vars
+      shell: bash
+      run: /bin/bash ${GITHUB_ACTION_PATH}/src/10-json-to-env.sh
+      env:
+        FILTER_PREFIX: ${{ inputs.INPUT_SECRETS_FILTER_PREFIX }}
+        INPUT_JSON: ${{ inputs.INPUT_SECRETS_JSON }}
+
+    - name: extract PR number
+      if: github.event.inputs.INPUT_PR_NUMBER != ''
+      id: get-pr-from-git-sha
+      uses: adiseshan/get-pr-info-action@v1
+      with:
+        INPUT_GITHUB_HOSTNAME: ${{ inputs.INPUT_GITHUB_HOSTNAME }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        INPUT_GITHUB_SHA: ${{ inputs.INPUT_GITHUB_SHA }}
+
+    - name: run terraform
+      id: run-terraform
+      shell: bash
+      run: /bin/bash ${GITHUB_ACTION_PATH}/src/20-terraform.sh
+      env:
+        INPUT_TARGET: ${{ inputs.INPUT_TARGET }}
+        INPUT_RUN_INIT: ${{ inputs.INPUT_RUN_INIT }}
+        INPUT_INIT_ADDITIONAL_ARGUMENTS: ${{ inputs.INPUT_INIT_ADDITIONAL_ARGUMENTS }}
+        INPUT_COMMAND: ${{ inputs.INPUT_COMMAND }}
+        INPUT_ADDITIONAL_ARGUMENTS: ${{ inputs.INPUT_ADDITIONAL_ARGUMENTS }}
+        INPUT_GLOBAL_ARGUMENTS: ${{ inputs.INPUT_GLOBAL_ARGUMENTS }}
+        INPUT_PATH: ${{ inputs.INPUT_PATH }}
+        INPUT_LOG_LEVEL: ${{ inputs.INPUT_LOG_LEVEL }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        INPUT_GITHUB_BASE_URL: https://${{ inputs.INPUT_GITHUB_HOSTNAME }}/api/v3
+        INPUT_GITHUB_HOSTNAME: ${{ inputs.INPUT_GITHUB_HOSTNAME }}
+        INPUT_OWNER: ${{ inputs.INPUT_GITHUB_REPOSITORY_OWNER }}
+        INPUT_REPO: ${{ inputs.INPUT_GITHUB_REPOSITORY_NAME }}
+        INPUT_PR_NUMBER: ${{ inputs.INPUT_PR_NUMBER || steps.get-pr-from-git-sha.outputs.OUTPUT_PR_NUMBER || '' }}

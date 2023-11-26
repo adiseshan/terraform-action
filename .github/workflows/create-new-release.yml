@@ -1,0 +1,35 @@
+name: create new release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      TAG_NAME:
+        description: 'tag name. If empty, new version will be auto calculated.'
+
+permissions:
+  contents: write
+
+jobs:
+  create-new-release:
+    runs-on: ubuntu-latest
+    container:
+      image: adiseshan/gh:v1.0.0
+      credentials:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: create new release
+        id: create-new-release
+        uses: adiseshan/create-new-release-action@v1
+        with:
+          INPUT_GITHUB_HOSTNAME: github.com
+          INPUT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          INPUT_GIT_REF: ${{ github.ref_name }}
+          INPUT_TAG_NAME: ${{ github.event.inputs.TAG_NAME || '' }}
