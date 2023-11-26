@@ -90,7 +90,9 @@ main() {
 
     echo "[INFO] Setup ${CONFIG_PATH} in $(pwd)"
     touch "${CONFIG_PATH}"
-    yq -i ".ghe_base_url = \"${INPUT_GITHUB_BASE_URL}\"" "${CONFIG_PATH}"
+
+    # TODO make it optional
+    # yq -i ".ghe_base_url = \"${INPUT_GITHUB_BASE_URL}\"" "${CONFIG_PATH}"
 
     if [[ "${command}" == "apply" ]]; then
         tf_args+=(
